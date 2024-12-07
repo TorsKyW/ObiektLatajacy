@@ -101,24 +101,24 @@ class Enemy extends Entity{
         if(parseInt(killcount.innerHTML)>parseInt(highscore.innerHTML)){
             highscore.innerHTML=killcount.innerHTML;
         }
-        switch(positionChecker(player)){
-            case 1:
-                this.x=canvas.width-this.width;
-                this.y=canvas.height-this.height;
-                break;
-            case 2:
-                this.x=0;
-                this.y=canvas.height-this.height;
-                break;
-            case 3:
-                this.x=canvas.width-this.width;
-                this.y=0;
-                break;
-            case 4:
-                this.x=0;
-                this.y=0;
-        }
         setTimeout(()=>{
+            switch(positionChecker(player)){
+                case 1:
+                    this.x=canvas.width*Math.floor(Math.random()*2);
+                    this.y=this.x>0?canvas.height*Math.floor(Math.random()*2):canvas.height;
+                    break;
+                case 2:
+                    this.x=canvas.width*Math.floor(Math.random()*2);
+                    this.y=this.x<canvas.width?canvas.height*Math.floor(Math.random()*2):canvas.height;
+                    break;
+                case 3:
+                    this.x=canvas.width*Math.floor(Math.random()*2);
+                    this.y=this.x>0?canvas.height*Math.floor(Math.random()*2):0;
+                    break;
+                case 4:
+                    this.x=canvas.width*Math.floor(Math.random()*2);
+                    this.y=this.x<canvas.width?canvas.height*Math.floor(Math.random()*2):0;
+            }
             this.alive=true;
         },Math.floor(Math.random()*3000)+1000);
         

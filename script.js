@@ -15,7 +15,8 @@ goblinimg.src='goblin.png';
 boomerangimg.src ='boomerang.png'
 playerimg.src='stickman.png'; 
 const Colision = (ent1,ent2)=>{
-    if(ent1.x+ent1.width>=ent2.x&&ent2.x+ent2.width>=ent1.x&&ent1.y+ent1.height>=ent2.y&&ent2.y+ent2.height>=ent1.y){
+    if(ent1.x+ent1.width-(ent1.width-ent1.hitboxWidth)/2>=ent2.x+(ent2.width-ent2.hitboxWidth)/2&&ent2.x+ent2.width-(ent2.width-ent2.hitboxWidth)/2>=ent1.x+(ent1.width-ent1.hitboxWidth)/2
+    &&ent1.y+ent1.height>=ent2.y&&ent2.y+ent2.height>=ent1.y){
         return true;
     }
     return false;
@@ -53,6 +54,7 @@ class Entity {
         this.originalY=y;
         this.height=height;
         this.width=width;
+        this.hitboxWidth=width;
         this.alive=true;
         this.invincible=false;
     }
@@ -69,6 +71,7 @@ class Entity {
 class Enemy extends Entity{
     constructor(x,y,width,height,hp){
         super(x,y,width,height,hp);
+        this.hitboxWidth=width-20;
     }
     Draw(){
         if(this.alive){

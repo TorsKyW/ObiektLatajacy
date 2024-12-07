@@ -1,0 +1,119 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:100vw;
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+    background: rgb(32, 46, 6);
+    text-align: center;
+}
+html{
+    margin: 0;
+}
+canvas {
+    width: 100%;
+    height: 80%;
+    outline: 10px solid black;
+    position: absolute;
+    background-image: url(forest.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.wrapper{
+    width: 40%;
+    height:100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.start{
+    position: absolute;
+    font-size: 3rem;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-weight: bold;
+    background-color: rgb(27, 165, 73);
+    border: 2px solid black;
+    border-radius: 10px;
+    padding: 1rem;
+    transition: .05s ease-in-out;
+
+}
+.start:hover{
+    background-color: #084d17;
+    cursor: pointer;
+}
+p{
+    font-size: 6rem;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    position: absolute;
+    color: white;
+    opacity: 0.7;
+}
+.gameover{
+    display: none;
+    position: relative;
+    top:-25%;
+}
+.right, .left{
+    width: 30%;
+    height:100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    position: relative;
+}
+img[src="heart.png"]{
+    width: 20%;
+    position: relative;
+    top:-30%;
+}
+.kills,.killcount{
+    opacity: 1;
+    transform: translateY(-50%);
+}
+.killcount{
+    transform: translateY(50%);
+}
+.highscore,.highscorevalue{
+    font-size: 4rem;
+    opacity: 1;
+    position: static;
+}
+.highscorediv{
+    height: 5rem;
+    width: 100%;
+    top:0;
+    position: absolute;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+img[src="wsad.png"]{
+    width: 60%;
+}
+img[src="arrows.png"]{
+    width: 50%;
+}
+#shoot{
+    font-size: 2rem;
+    position:absolute;
+    bottom: 0;
+}
+#move{
+    font-size: 2rem;
+    position: absolute;
+    bottom: 0;
+}
+.left{
+    flex-direction: column;
+}
+.top,.bot{
+    position: relative;
+    height: 40%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}

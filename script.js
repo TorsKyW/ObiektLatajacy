@@ -8,6 +8,8 @@ const killcount = document.querySelector('.killcount');
 const highscore = document.querySelector('.highscorevalue');
 let keys={};
 let game;
+canvas.width=700;
+canvas.height=700;
 const playerimg = new Image;
 const boomerangimg = new Image;
 const goblinimg = new Image;
@@ -15,12 +17,14 @@ goblinimg.src='goblin.png';
 boomerangimg.src ='boomerang.png'
 playerimg.src='stickman.png'; 
 const Colision = (ent1,ent2)=>{
-    if(ent1.x+ent1.width-(ent1.width-ent1.hitboxWidth)/2>=ent2.x+(ent2.width-ent2.hitboxWidth)/2&&ent2.x+ent2.width-(ent2.width-ent2.hitboxWidth)/2>=ent1.x+(ent1.width-ent1.hitboxWidth)/2
-    &&ent1.y+ent1.height>=ent2.y&&ent2.y+ent2.height>=ent1.y){
+    if(ent1.x-ent1.width/2+ent1.width-(ent1.width-ent1.hitboxWidth)/2>=ent2.x-ent2.width/2+(ent2.width-ent2.hitboxWidth)/2&&ent2.x-ent2.width/2+ent2.width-(ent2.width-ent2.hitboxWidth)/2>=ent1.x-ent1.width/2+(ent1.width-ent1.hitboxWidth)/2
+    &&ent1.y-ent1.height/2+ent1.height>=ent2.y-ent2.height/2&&ent2.y-ent2.height/2+ent2.height>=ent1.y-ent1.height/2){
         return true;
     }
     return false;
 }
+
+
 const removeHp=(attacker,defender)=>{
     if(Colision(attacker,defender)&&!defender.invincible&&attacker.alive&&defender.alive){
         defender.hp-=1;
@@ -48,10 +52,10 @@ class Entity {
     constructor(x,y,width,height,hp){
         this.hp=hp;
         this.originalhp=hp;
-        this.x = x;
-        this.originalX=x;
-        this.y = y;
-        this.originalY=y;
+        this.x = x+width/2;
+        this.originalX=x+width/2;
+        this.y = y+height/2;
+        this.originalY=y+height/2;
         this.height=height;
         this.width=width;
         this.hitboxWidth=width;
@@ -71,22 +75,22 @@ class Entity {
 class Enemy extends Entity{
     constructor(x,y,width,height,hp){
         super(x,y,width,height,hp);
-        this.hitboxWidth=width-20;
+        this.hitboxWidth=width*.55;
     }
     Draw(){
         if(this.alive){
-            ctx.drawImage(goblinimg,this.x,this.y,this.width,this.height);
+            ctx.drawImage(goblinimg,this.x-this.width/2,this.y-this.height/2,this.width,this.height);
         }
     }
     Follow(){
         if(this.alive){            
             if((player.x-this.x)!=0){
                 let a=(player.y-this.y)/Math.abs(player.x-this.x);
-                this.y += .5/Math.sqrt(1+(a*a))*a;
-                this.x += (player.x-this.x)>0 ? .5/Math.sqrt(1+(a*a)) : -.5/Math.sqrt(1+(a*a));
+                this.y += 1/Math.sqrt(1+(a*a))*a;
+                this.x += (player.x-this.x)>0 ? 1/Math.sqrt(1+(a*a)) : -1/Math.sqrt(1+(a*a));
             }
             else{ 
-                this.y+=(player.y-this.y)>0 ? .5 : -.5;
+                this.y+=(player.y-this.y)>0 ? 3 : -3;
             }                   
         }
     }
@@ -127,16 +131,17 @@ class Projectile extends Entity {
         this.shot=false;
     }
     Draw(){
-        ctx.drawImage(boomerangimg,this.x,this.y,this.width,this.height)
+        ctx.drawImage(boomerangimg,this.x-this.width/2,this.y-this.height/2,this.width,this.height)
     }
 }
+let boomerangspeed=1;
 class Player extends Entity {
     constructor(x,y,width,height,hp){
         super(x,y,width,height,hp);
     }
     Draw(){
         if(this.alive){
-            ctx.drawImage(playerimg,this.x,this.y,this.width,this.height)
+            ctx.drawImage(playerimg,this.x-this.width/2,this.y-this.height/2,this.width,this.height)
         }
     }
     Shoot(direction){
@@ -150,30 +155,32 @@ class Player extends Entity {
                         boomerang.y=this.y;
                         let i=0;
                         const shoot = setInterval(() => {
-                            boomerang.y-=2;
-                            if(i>25){
+                            boomerang.y-=6;
+                            if(i>40){
                                 const back = setInterval(()=>{
-                                    if((this.x-boomerang.x)!=0){
-                                        let a=(this.y-boomerang.y)/Math.abs(this.x-boomerang.x);
-                                        boomerang.y += Math.abs(this.x-boomerang.x)/3*a;
-                                        boomerang.x += (this.x-boomerang.x)>0 ? Math.abs(this.x-boomerang.x)/3 : -Math.abs(this.x-boomerang.x)/3;
+                                    if((this.x - boomerang.x) != 0) {
+                                        let a = (player.y - boomerang.y) / Math.abs(this.x - boomerang.x);
+                                        boomerang.y += boomerangspeed  / Math.sqrt(1 + (a * a)) * a;
+                                        boomerang.x += (this.x - boomerang.x) > 0 ? boomerangspeed  / Math.sqrt(1 + (a * a)) : -boomerangspeed  / Math.sqrt(1 + (a * a));
+                                    } else { 
+                                        boomerang.y += (player.y - boomerang.y) > 0 ? boomerangspeed : -boomerangspeed ;
                                     }
-                                    else{ 
-                                        boomerang.y+=(this.y-boomerang.y)>0 ? Math.abs(this.y-boomerang.y)/3 : -Math.abs(this.y-boomerang.y)/3;
-                                    }                   
+                                                     
                                     if(Math.abs(this.x-boomerang.x)<this.width&&Math.abs(this.y-boomerang.y)<this.height){
                                         boomerang.x=this.x;
                                         boomerang.y=this.y;
                                     }
                                     if(this.x==boomerang.x&&this.y==boomerang.y){
                                         boomerang.shot=false;
+                                        boomerangspeed=1;
                                         clearInterval(back);
                                     }
-                                },100)
+                                    boomerangspeed++;
+                                },30)
                                 clearInterval(shoot);
                             }
                             i++; 
-                        }, 30);
+                        }, 15);
                     }
                     break;
                     //down
@@ -184,30 +191,32 @@ class Player extends Entity {
                         boomerang.y=this.y+(this.height/2);
                         let i=0;
                         const shoot = setInterval(() => {
-                            boomerang.y+=2;
-                            if(i>25){
+                            boomerang.y+=6;
+                            if(i>40){
                                 const back = setInterval(()=>{
-                                    if((this.x-boomerang.x)!=0){
-                                        let a=(this.y-boomerang.y)/Math.abs(this.x-boomerang.x);
-                                        boomerang.y += Math.abs(this.x-boomerang.x)/3*a;
-                                        boomerang.x += (this.x-boomerang.x)>0 ? Math.abs(this.x-boomerang.x)/3 : -Math.abs(this.x-boomerang.x)/3;
+                                    if((this.x - boomerang.x) != 0) {
+                                        let a = (player.y - boomerang.y) / Math.abs(this.x - boomerang.x);
+                                        boomerang.y += boomerangspeed  / Math.sqrt(1 + (a * a)) * a;
+                                        boomerang.x += (this.x - boomerang.x) > 0 ? boomerangspeed  / Math.sqrt(1 + (a * a)) : -boomerangspeed  / Math.sqrt(1 + (a * a));
+                                    } else { 
+                                        boomerang.y += (player.y - boomerang.y) > 0 ? boomerangspeed : -boomerangspeed ;
                                     }
-                                    else{ 
-                                        boomerang.y+=(this.y-boomerang.y)>0 ? Math.abs(this.y-boomerang.y)/3 : -Math.abs(this.y-boomerang.y)/3;
-                                    }                   
+                                                     
                                     if(Math.abs(this.x-boomerang.x)<this.width&&Math.abs(this.y-boomerang.y)<this.height){
                                         boomerang.x=this.x;
                                         boomerang.y=this.y;
                                     }
                                     if(this.x==boomerang.x&&this.y==boomerang.y){
                                         boomerang.shot=false;
+                                        boomerangspeed=1;
                                         clearInterval(back);
                                     }
-                                },100)
+                                    boomerangspeed++;
+                                },30)
                                 clearInterval(shoot);
                             }
                             i++; 
-                        }, 30);
+                        }, 15);
                     }
                     break;
                     //left
@@ -218,30 +227,32 @@ class Player extends Entity {
                             boomerang.y=this.y;
                             let i=0;
                             const shoot = setInterval(() => {
-                                boomerang.x-=4;
-                                if(i>25){
+                                boomerang.x-=6;
+                                if(i>40){
                                     const back = setInterval(()=>{
-                                        if((this.x-boomerang.x)!=0){
-                                            let a=(this.y-boomerang.y)/Math.abs(this.x-boomerang.x);
-                                        boomerang.y += Math.abs(this.x-boomerang.x)/3*a;
-                                        boomerang.x += (this.x-boomerang.x)>0 ? Math.abs(this.x-boomerang.x)/3 : -Math.abs(this.x-boomerang.x)/3;
-                                    }
-                                    else{ 
-                                        boomerang.y+=(this.y-boomerang.y)>0 ? Math.abs(this.y-boomerang.y)/3 : -Math.abs(this.y-boomerang.y)/3;
-                                    }                   
-                                    if(Math.abs(this.x-boomerang.x)<this.width&&Math.abs(this.y-boomerang.y)<this.height){
-                                        boomerang.x=this.x;
-                                        boomerang.y=this.y;
-                                    }
-                                    if(this.x==boomerang.x&&this.y==boomerang.y){
-                                        boomerang.shot=false;
-                                        clearInterval(back);
-                                    }
-                                },100)
-                                clearInterval(shoot);
-                            }
-                            i++; 
-                        }, 30);
+                                        if((this.x - boomerang.x) != 0) {
+                                            let a = (player.y - boomerang.y) / Math.abs(this.x - boomerang.x);
+                                            boomerang.y += boomerangspeed  / Math.sqrt(1 + (a * a)) * a;
+                                            boomerang.x += (this.x - boomerang.x) > 0 ? boomerangspeed  / Math.sqrt(1 + (a * a)) : -boomerangspeed  / Math.sqrt(1 + (a * a));
+                                        } else { 
+                                            boomerang.y += (player.y - boomerang.y) > 0 ? boomerangspeed : -boomerangspeed ;
+                                        }
+                                                         
+                                        if(Math.abs(this.x-boomerang.x)<this.width&&Math.abs(this.y-boomerang.y)<this.height){
+                                            boomerang.x=this.x;
+                                            boomerang.y=this.y;
+                                        }
+                                        if(this.x==boomerang.x&&this.y==boomerang.y){
+                                            boomerang.shot=false;
+                                            boomerangspeed=1;
+                                            clearInterval(back);
+                                        }
+                                        boomerangspeed++;
+                                    },30)
+                                    clearInterval(shoot);
+                                }
+                                i++; 
+                            }, 15);
                     }
                     break;
                     //right
@@ -252,40 +263,42 @@ class Player extends Entity {
                             boomerang.y=this.y;
                             let i=0;
                             const shoot = setInterval(() => {
-                                boomerang.x+=4;
-                                if(i>25){
+                                boomerang.x+=6;
+                                if(i>40){
                                     const back = setInterval(()=>{
-                                    if((this.x-boomerang.x)!=0){
-                                        let a=(this.y-boomerang.y)/Math.abs(this.x-boomerang.x);
-                                        boomerang.y += Math.abs(this.x-boomerang.x)/3*a;
-                                        boomerang.x += (this.x-boomerang.x)>0 ? Math.abs(this.x-boomerang.x)/3 : -Math.abs(this.x-boomerang.x)/3;
-                                    }
-                                    else{ 
-                                        boomerang.y+=(this.y-boomerang.y)>0 ? Math.abs(this.y-boomerang.y)/3 : -Math.abs(this.y-boomerang.y)/3;
-                                    }                   
-                                    if(Math.abs(this.x-boomerang.x)<this.width&&Math.abs(this.y-boomerang.y)<this.height){
-                                        boomerang.x=this.x;
-                                        boomerang.y=this.y;
-                                    }
-                                    if(this.x==boomerang.x&&this.y==boomerang.y){
-                                        boomerang.shot=false;
-                                        clearInterval(back);
-                                    }
-                                },100)
-                                clearInterval(shoot);
-                            }
-                            i++; 
-                        }, 30);
+                                        if((this.x - boomerang.x) != 0) {
+                                            let a = (player.y - boomerang.y) / Math.abs(this.x - boomerang.x);
+                                            boomerang.y += boomerangspeed  / Math.sqrt(1 + (a * a)) * a;
+                                            boomerang.x += (this.x - boomerang.x) > 0 ? boomerangspeed  / Math.sqrt(1 + (a * a)) : -boomerangspeed  / Math.sqrt(1 + (a * a));
+                                        } else { 
+                                            boomerang.y += (player.y - boomerang.y) > 0 ? boomerangspeed : -boomerangspeed ;
+                                        }
+                                                         
+                                        if(Math.abs(this.x-boomerang.x)<this.width&&Math.abs(this.y-boomerang.y)<this.height){
+                                            boomerang.x=this.x;
+                                            boomerang.y=this.y;
+                                        }
+                                        if(this.x==boomerang.x&&this.y==boomerang.y){
+                                            boomerang.shot=false;
+                                            boomerangspeed=1;
+                                            clearInterval(back);
+                                        }
+                                        boomerangspeed++;
+                                    },30)
+                                    clearInterval(shoot);
+                                }
+                                i++; 
+                            }, 15);
                     }
                 }
             }
         }
     }
-    const player = new Player(canvas.width/2-5,canvas.height/2-5,20,10,3);
-    const enemy1 = new Enemy(40,40,50,25,3);
-    const enemy2 = new Enemy(100,100,50,25,3);
-    const enemy3 = new Enemy(200,130,50,25,3);
-    const boomerang = new Projectile(player.x,player.y,10,5);
+    const player = new Player(canvas.width/2-5,canvas.height/2-5,50,50,3);
+    const enemy1 = new Enemy(40,40,150,150,3);
+    const enemy2 = new Enemy(500,0,150,150,3);
+    const enemy3 = new Enemy(200,630,150,150,3);
+    const boomerang = new Projectile(player.x,player.y,30,30);
     const aliveList = [player,enemy1,enemy2,enemy3];
     const entityList = [player,boomerang,enemy1,enemy2,enemy3];
     const enemyList = [enemy1,enemy2,enemy3];
@@ -332,16 +345,16 @@ const update = () =>{
     });
 
     if(keys["a"] && player.x>0){
-        player.moveX(-2);
+        player.moveX(-3.5);
     }
     if(keys["d"] && player.x<(canvas.width-player.width)){
-        player.moveX(2);
+        player.moveX(3.5);
     }
     if(keys["w"]&& player.y>0){
-        player.moveY(-1);
+        player.moveY(-3.5);
     }
     if(keys["s"] && player.y<(canvas.height-player.height)){
-        player.moveY(1);
+        player.moveY(3.5);
     }
     if(boomerang.shot==1){
         boomerang.Draw();

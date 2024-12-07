@@ -344,16 +344,16 @@ const update = () =>{
         }
     });
 
-    if(keys["a"] && player.x>0){
+    if(keys["a"] && player.x>player.width/2){
         player.moveX(-3.5);
     }
-    if(keys["d"] && player.x<(canvas.width-player.width)){
+    if(keys["d"] && player.x<(canvas.width-player.width/2)){
         player.moveX(3.5);
     }
-    if(keys["w"]&& player.y>0){
+    if(keys["w"]&& player.y>player.height/2){
         player.moveY(-3.5);
     }
-    if(keys["s"] && player.y<(canvas.height-player.height)){
+    if(keys["s"] && player.y<(canvas.height-player.height/2)){
         player.moveY(3.5);
     }
     if(boomerang.shot==1){

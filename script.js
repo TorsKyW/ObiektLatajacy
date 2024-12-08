@@ -92,11 +92,11 @@ class Enemy extends Entity{
         if(this.alive){            
             if((player.x-this.x)!=0){
                 let a=(player.y-this.y)/Math.abs(player.x-this.x);
-                this.y += 1/Math.sqrt(1+(a*a))*a;
-                this.x += (player.x-this.x)>0 ? 1/Math.sqrt(1+(a*a)) : -1/Math.sqrt(1+(a*a));
+                this.y += 1.5/Math.sqrt(1+(a*a))*a;
+                this.x += (player.x-this.x)>0 ? 1.5/Math.sqrt(1+(a*a)) : -1.5/Math.sqrt(1+(a*a));
             }
             else{ 
-                this.y+=(player.y-this.y)>0 ? 3 : -3;
+                this.y+=(player.y-this.y)>0 ? 2 : -2;
             }                   
         }
     }
@@ -310,16 +310,16 @@ const update = () =>{
 const Movement=()=>{
     MovementInterval = setInterval(()=>{
         if(keys["a"] && player.x>player.width/2){
-            player.moveX(-4);
+            player.moveX(-5);
         }
         if(keys["d"] && player.x<(canvas.width-player.width/2)){
-            player.moveX(4);
+            player.moveX(5);
         }
         if(keys["w"]&& player.y>player.height/2){
-            player.moveY(-4);
+            player.moveY(-5);
         }
         if(keys["s"] && player.y<(canvas.height-player.height/2)){
-            player.moveY(4);
+            player.moveY(5);
         }
         enemyList.forEach(e=>{
             e.Follow();
@@ -327,7 +327,7 @@ const Movement=()=>{
         if(!player.alive){
             clearInterval(MovementInterval);
         }
-    },1);
+    },15);
 }
 addEventListener('keydown',(e)=>{
     keys[e.key.toLowerCase()]=true;

@@ -326,7 +326,7 @@ const Movement=()=>{
     })
 }
 addEventListener('keydown',(e)=>{
-    keys[e.key]=true;
+    keys[e.key.toLowerCase()]=true;
     if(e.code=="ArrowUp"){
         player.Shoot(1);
     }
@@ -341,7 +341,7 @@ addEventListener('keydown',(e)=>{
     }
 })
 addEventListener('keyup', (e)=>{
-    keys[e.key]=false;
+    keys[e.key.toLowerCase()]=false;
 })
 
 StartButton.addEventListener('click', ()=>{

@@ -327,6 +327,7 @@ const update = () =>{
         GameOver.style.display='block';
         StartButton.style.display='block';
         cancelAnimationFrame(game);
+        clearInterval(MovementInterval);
         return;
     }
     ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -335,7 +336,6 @@ const update = () =>{
         if(boomerang.shot){
             removeHp(boomerang,e);
         }
-        e.Follow();
         e.Draw();
     })
     aliveList.forEach(e => {
@@ -344,18 +344,6 @@ const update = () =>{
         }
     });
 
-    if(keys["a"] && player.x>player.width/2){
-        player.moveX(-3.5);
-    }
-    if(keys["d"] && player.x<(canvas.width-player.width/2)){
-        player.moveX(3.5);
-    }
-    if(keys["w"]&& player.y>player.height/2){
-        player.moveY(-3.5);
-    }
-    if(keys["s"] && player.y<(canvas.height-player.height/2)){
-        player.moveY(3.5);
-    }
     if(boomerang.shot==1){
         boomerang.Draw();
     }
@@ -369,6 +357,23 @@ const update = () =>{
     }
     game=requestAnimationFrame(update);
     
+}
+const Movement=()=>{
+    if(keys["a"] && player.x>player.width/2){
+        player.moveX(-4);
+    }
+    if(keys["d"] && player.x<(canvas.width-player.width/2)){
+        player.moveX(4);
+    }
+    if(keys["w"]&& player.y>player.height/2){
+        player.moveY(-4);
+    }
+    if(keys["s"] && player.y<(canvas.height-player.height/2)){
+        player.moveY(4);
+    }
+    enemyList.forEach(e=>{
+        e.Follow();
+    })
 }
 addEventListener('keydown',(e)=>{
     keys[e.key]=true;
@@ -400,7 +405,6 @@ StartButton.addEventListener('click', ()=>{
     StartButton.style.display='none';
     killcount.innerHTML=0;
     let i=3;
-    setTimeout(update,3000);
     timer.innerHTML=i;
     GameOver.style.display='none';
     const interval=setInterval(()=>{
@@ -409,6 +413,8 @@ StartButton.addEventListener('click', ()=>{
             timer.style.display='none';
             clearInterval(interval);
             timer.innerHTML='';
+            update();
+            MovementInterval = setInterval(Movement,3);
         }
         timer.innerHTML=i;
     },1000)

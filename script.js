@@ -58,7 +58,7 @@ class Entity {
         this.originalhp=hp;
         this.x = x+width/2;
         this.originalX=x+width/2;
-        this.y = y+height/2;
+        this.y = y+height;
         this.originalY=y+height/2;
         this.height=height;
         this.hitboxHeight=height;
@@ -277,7 +277,6 @@ const update = () =>{
         GameOver.style.display='block';
         StartButton.style.display='block';
         cancelAnimationFrame(game);
-        clearInterval(MovementInterval);
         return;
     }
     ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -309,21 +308,26 @@ const update = () =>{
     
 }
 const Movement=()=>{
-    if(keys["a"] && player.x>player.width/2){
-        player.moveX(-4);
-    }
-    if(keys["d"] && player.x<(canvas.width-player.width/2)){
-        player.moveX(4);
-    }
-    if(keys["w"]&& player.y>player.height/2){
-        player.moveY(-4);
-    }
-    if(keys["s"] && player.y<(canvas.height-player.height/2)){
-        player.moveY(4);
-    }
-    enemyList.forEach(e=>{
-        e.Follow();
-    })
+    MovementInterval = setInterval(()=>{
+        if(keys["a"] && player.x>player.width/2){
+            player.moveX(-4);
+        }
+        if(keys["d"] && player.x<(canvas.width-player.width/2)){
+            player.moveX(4);
+        }
+        if(keys["w"]&& player.y>player.height/2){
+            player.moveY(-4);
+        }
+        if(keys["s"] && player.y<(canvas.height-player.height/2)){
+            player.moveY(4);
+        }
+        enemyList.forEach(e=>{
+            e.Follow();
+        })
+        if(!player.alive){
+            clearInterval(MovementInterval);
+        }
+    },1);
 }
 addEventListener('keydown',(e)=>{
     keys[e.key.toLowerCase()]=true;
@@ -364,7 +368,7 @@ StartButton.addEventListener('click', ()=>{
             clearInterval(interval);
             timer.innerHTML='';
             update();
-            MovementInterval = setInterval(Movement,3);
+            Movement();
         }
         timer.innerHTML=i;
     },1000)

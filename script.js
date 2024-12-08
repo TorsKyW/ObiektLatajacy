@@ -17,8 +17,8 @@ goblinimg.src='goblin.png';
 boomerangimg.src ='boomerang.png'
 playerimg.src='stickman.png'; 
 const Colision = (ent1,ent2)=>{
-    if(ent1.x-ent1.width/2+ent1.width-(ent1.width-ent1.hitboxWidth)/2>=ent2.x-ent2.width/2+(ent2.width-ent2.hitboxWidth)/2&&ent2.x-ent2.width/2+ent2.width-(ent2.width-ent2.hitboxWidth)/2>=ent1.x-ent1.width/2+(ent1.width-ent1.hitboxWidth)/2
-    &&ent1.y-ent1.height/2+ent1.height>=ent2.y-ent2.height/2&&ent2.y-ent2.height/2+ent2.height>=ent1.y-ent1.height/2){
+    if(ent1.x+ent1.hitboxWidth/2>=ent2.x-ent2.hitboxWidth/2&&ent2.x+ent2.hitboxWidth/2>=ent1.x-ent1.hitboxWidth/2
+    &&ent1.y+ent1.height/2>=ent2.y+ent2.height/2-ent2.hitboxHeight&&ent2.y+ent2.height/2>=ent1.y+ent1.height/2-ent1.hitboxHeight){
         return true;
     }
     return false;
@@ -37,15 +37,19 @@ const removeHp=(attacker,defender)=>{
 const positionChecker= (ent)=>{
     if(ent.x<canvas.width/2&&ent.y<canvas.height/2){
         return 1;
+        // upperleft
     }
     if(ent.x>=canvas.width/2&&ent.y<canvas.height/2){
         return 2;
+        // upperright
     }
     if(ent.x<canvas.width/2&&ent.y>=canvas.height/2){
         return 3;
+        // lowerleft
     }
     if(ent.x>=canvas.width/2&&ent.y>=canvas.height/2){
         return 4;
+        // lowerright
     }
 }
 class Entity {
@@ -57,6 +61,7 @@ class Entity {
         this.y = y+height/2;
         this.originalY=y+height/2;
         this.height=height;
+        this.hitboxHeight=height;
         this.width=width;
         this.hitboxWidth=width;
         this.alive=true;
@@ -76,6 +81,7 @@ class Enemy extends Entity{
     constructor(x,y,width,height,hp){
         super(x,y,width,height,hp);
         this.hitboxWidth=width*.55;
+        this.hitboxHeight=height*.75;
     }
     Draw(){
         if(this.alive){
@@ -144,6 +150,26 @@ class Player extends Entity {
             ctx.drawImage(playerimg,this.x-this.width/2,this.y-this.height/2,this.width,this.height)
         }
     }
+    BoomerangBack(){
+        const back = setInterval(()=>{
+            if((this.x - boomerang.x) != 0) {
+                let a = (player.y - boomerang.y) / Math.abs(this.x - boomerang.x);
+                boomerang.y += boomerangspeed  / Math.sqrt(1 + (a * a)) * a;
+                boomerang.x += (this.x - boomerang.x) > 0 ? boomerangspeed  / Math.sqrt(1 + (a * a)) : -boomerangspeed  / Math.sqrt(1 + (a * a));
+            } else { 
+                boomerang.y += (player.y - boomerang.y) > 0 ? boomerangspeed : -boomerangspeed ;
+            }
+                             
+            if(Math.abs(this.x-boomerang.x)<this.width/2&&Math.abs(this.y-boomerang.y)<this.height/2){
+                boomerang.x=this.x;
+                boomerang.y=this.y;
+                boomerang.shot=false;
+                boomerangspeed=1;
+                clearInterval(back);
+            }
+            boomerangspeed++;
+        },30)
+    }
     Shoot(direction){
         if(this.alive){
             switch(direction){
@@ -157,26 +183,7 @@ class Player extends Entity {
                         const shoot = setInterval(() => {
                             boomerang.y-=6;
                             if(i>40){
-                                const back = setInterval(()=>{
-                                    if((this.x - boomerang.x) != 0) {
-                                        let a = (player.y - boomerang.y) / Math.abs(this.x - boomerang.x);
-                                        boomerang.y += boomerangspeed  / Math.sqrt(1 + (a * a)) * a;
-                                        boomerang.x += (this.x - boomerang.x) > 0 ? boomerangspeed  / Math.sqrt(1 + (a * a)) : -boomerangspeed  / Math.sqrt(1 + (a * a));
-                                    } else { 
-                                        boomerang.y += (player.y - boomerang.y) > 0 ? boomerangspeed : -boomerangspeed ;
-                                    }
-                                                     
-                                    if(Math.abs(this.x-boomerang.x)<this.width&&Math.abs(this.y-boomerang.y)<this.height){
-                                        boomerang.x=this.x;
-                                        boomerang.y=this.y;
-                                    }
-                                    if(this.x==boomerang.x&&this.y==boomerang.y){
-                                        boomerang.shot=false;
-                                        boomerangspeed=1;
-                                        clearInterval(back);
-                                    }
-                                    boomerangspeed++;
-                                },30)
+                                this.BoomerangBack();
                                 clearInterval(shoot);
                             }
                             i++; 
@@ -193,26 +200,7 @@ class Player extends Entity {
                         const shoot = setInterval(() => {
                             boomerang.y+=6;
                             if(i>40){
-                                const back = setInterval(()=>{
-                                    if((this.x - boomerang.x) != 0) {
-                                        let a = (player.y - boomerang.y) / Math.abs(this.x - boomerang.x);
-                                        boomerang.y += boomerangspeed  / Math.sqrt(1 + (a * a)) * a;
-                                        boomerang.x += (this.x - boomerang.x) > 0 ? boomerangspeed  / Math.sqrt(1 + (a * a)) : -boomerangspeed  / Math.sqrt(1 + (a * a));
-                                    } else { 
-                                        boomerang.y += (player.y - boomerang.y) > 0 ? boomerangspeed : -boomerangspeed ;
-                                    }
-                                                     
-                                    if(Math.abs(this.x-boomerang.x)<this.width&&Math.abs(this.y-boomerang.y)<this.height){
-                                        boomerang.x=this.x;
-                                        boomerang.y=this.y;
-                                    }
-                                    if(this.x==boomerang.x&&this.y==boomerang.y){
-                                        boomerang.shot=false;
-                                        boomerangspeed=1;
-                                        clearInterval(back);
-                                    }
-                                    boomerangspeed++;
-                                },30)
+                                this.BoomerangBack();
                                 clearInterval(shoot);
                             }
                             i++; 
@@ -229,26 +217,7 @@ class Player extends Entity {
                             const shoot = setInterval(() => {
                                 boomerang.x-=6;
                                 if(i>40){
-                                    const back = setInterval(()=>{
-                                        if((this.x - boomerang.x) != 0) {
-                                            let a = (player.y - boomerang.y) / Math.abs(this.x - boomerang.x);
-                                            boomerang.y += boomerangspeed  / Math.sqrt(1 + (a * a)) * a;
-                                            boomerang.x += (this.x - boomerang.x) > 0 ? boomerangspeed  / Math.sqrt(1 + (a * a)) : -boomerangspeed  / Math.sqrt(1 + (a * a));
-                                        } else { 
-                                            boomerang.y += (player.y - boomerang.y) > 0 ? boomerangspeed : -boomerangspeed ;
-                                        }
-                                                         
-                                        if(Math.abs(this.x-boomerang.x)<this.width&&Math.abs(this.y-boomerang.y)<this.height){
-                                            boomerang.x=this.x;
-                                            boomerang.y=this.y;
-                                        }
-                                        if(this.x==boomerang.x&&this.y==boomerang.y){
-                                            boomerang.shot=false;
-                                            boomerangspeed=1;
-                                            clearInterval(back);
-                                        }
-                                        boomerangspeed++;
-                                    },30)
+                                    this.BoomerangBack();
                                     clearInterval(shoot);
                                 }
                                 i++; 
@@ -265,26 +234,7 @@ class Player extends Entity {
                             const shoot = setInterval(() => {
                                 boomerang.x+=6;
                                 if(i>40){
-                                    const back = setInterval(()=>{
-                                        if((this.x - boomerang.x) != 0) {
-                                            let a = (player.y - boomerang.y) / Math.abs(this.x - boomerang.x);
-                                            boomerang.y += boomerangspeed  / Math.sqrt(1 + (a * a)) * a;
-                                            boomerang.x += (this.x - boomerang.x) > 0 ? boomerangspeed  / Math.sqrt(1 + (a * a)) : -boomerangspeed  / Math.sqrt(1 + (a * a));
-                                        } else { 
-                                            boomerang.y += (player.y - boomerang.y) > 0 ? boomerangspeed : -boomerangspeed ;
-                                        }
-                                                         
-                                        if(Math.abs(this.x-boomerang.x)<this.width&&Math.abs(this.y-boomerang.y)<this.height){
-                                            boomerang.x=this.x;
-                                            boomerang.y=this.y;
-                                        }
-                                        if(this.x==boomerang.x&&this.y==boomerang.y){
-                                            boomerang.shot=false;
-                                            boomerangspeed=1;
-                                            clearInterval(back);
-                                        }
-                                        boomerangspeed++;
-                                    },30)
+                                    this.BoomerangBack();
                                     clearInterval(shoot);
                                 }
                                 i++; 
